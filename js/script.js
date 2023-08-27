@@ -61,21 +61,31 @@ function createIcon(className) {
   return i;
 }
 
-function onClickItem(e) {}
-
-function removeItem(e) {
+function onClickItem(e) {
   if (e.target.parentElement.classList.contains('remove-item')) {
-    if (confirm('Are you sure?')) {
-      e.target.parentElement.parentElement.remove();
-    }
+    removeItem(e.target.parentElement.parentElement);
   }
-  checkUI();
+}
+
+function removeItem(item) {
+  if (confirm('Are you sure?')) {
+    item.remove();
+    removeItemFromStorage(item.textContent);
+    checkUI();
+  }
+}
+
+function removeItemFromStorage(item) {
+  let itemsFromStorage = getItemsFromStorage();
+  itemsFromStorage = itemsFromStorage.filter((i) => i !== item);
+  localStorage.setItem('items', JSON.stringify(itemsFromStorage));
 }
 
 function clearItems(e) {
   while (itemList.firstChild) {
     itemList.removeChild(itemList.firstChild);
   }
+  localStorage.removeItem('items');
   checkUI();
 }
 
