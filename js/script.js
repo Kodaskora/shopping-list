@@ -4,6 +4,12 @@ const itemList = document.getElementById('item-list');
 const clearBtn = document.getElementById('clear');
 const itemFilter = document.getElementById('filter');
 
+function displayItems() {
+  const itemsFromStorage = getItemsFromStorage();
+  itemsFromStorage.forEach((item) => addItemToDom(item));
+  checkUI();
+}
+
 function onAddItemSubmit(e) {
   e.preventDefault();
   const newItem = itemInput.value;
@@ -12,8 +18,19 @@ function onAddItemSubmit(e) {
     return;
   }
   addItemToDom(newItem);
+  addItemToStorage(newItem);
   checkUI();
   itemInput.value = '';
+}
+
+function getItemsFromStorage() {
+  let itemsFromStorage;
+  if (localStorage.getItem('items') === null) {
+    itemsFromStorage = [];
+  } else {
+    itemsFromStorage = JSON.parse(localStorage.getItem('items'));
+  }
+  return itemsFromStorage;
 }
 
 function addItemToDom(item) {
@@ -22,6 +39,12 @@ function addItemToDom(item) {
   const button = createButton('remove-item btn-link text-red');
   li.appendChild(button);
   itemList.appendChild(li);
+}
+
+function addItemToStorage(item) {
+  const itemsFromStorage = getItemsFromStorage();
+  itemsFromStorage.push(item);
+  localStorage.setItem('items', JSON.stringify(itemsFromStorage));
 }
 
 function createButton(className) {
@@ -37,6 +60,8 @@ function createIcon(className) {
   i.className = className;
   return i;
 }
+
+function onClickItem(e) {}
 
 function removeItem(e) {
   if (e.target.parentElement.classList.contains('remove-item')) {
@@ -78,8 +103,13 @@ function checkUI() {
   }
 }
 
-itemForm.addEventListener('submit', onAddItemSubmit);
-itemList.addEventListener('click', removeItem);
-clearBtn.addEventListener('click', clearItems);
-itemFilter.addEventListener('input', filterItems);
-checkUI();
+function init() {
+  itemForm.addEventListener('submit', onAddItemSubmit);
+  itemList.addEventListener('click', onClickItem);
+  clearBtn.addEventListener('click', clearItems);
+  itemFilter.addEventListener('input', filterItems);
+  document.addEventListener('DOMContentLoaded', displayItems);
+  checkUI();
+}
+
+init();
