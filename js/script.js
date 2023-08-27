@@ -4,22 +4,24 @@ const itemList = document.getElementById('item-list');
 const clearBtn = document.getElementById('clear');
 const itemFilter = document.getElementById('filter');
 
-function addItem(e) {
+function onAddItemSubmit(e) {
   e.preventDefault();
   const newItem = itemInput.value;
-
   if (newItem === '') {
     alert('Please add an item!');
     return;
   }
+  addItemToDom(newItem);
+  checkUI();
+  itemInput.value = '';
+}
 
+function addItemToDom(item) {
   const li = document.createElement('li');
-  li.appendChild(document.createTextNode(newItem));
+  li.appendChild(document.createTextNode(item));
   const button = createButton('remove-item btn-link text-red');
   li.appendChild(button);
   itemList.appendChild(li);
-  checkUI();
-  itemInput.value = '';
 }
 
 function createButton(className) {
@@ -52,6 +54,19 @@ function clearItems(e) {
   checkUI();
 }
 
+function filterItems(e) {
+  const items = itemList.querySelectorAll('li');
+  const text = e.target.value.toLowerCase();
+  items.forEach((item) => {
+    const itemName = item.firstChild.textContent.toLowerCase();
+    if (itemName.indexOf(text) != -1) {
+      item.style.display = 'flex';
+    } else {
+      item.style.display = 'none';
+    }
+  });
+}
+
 function checkUI() {
   const items = itemList.querySelectorAll('li');
   if (items.length === 0) {
@@ -63,7 +78,8 @@ function checkUI() {
   }
 }
 
-itemForm.addEventListener('submit', addItem);
+itemForm.addEventListener('submit', onAddItemSubmit);
 itemList.addEventListener('click', removeItem);
 clearBtn.addEventListener('click', clearItems);
+itemFilter.addEventListener('input', filterItems);
 checkUI();
